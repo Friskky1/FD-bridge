@@ -12,7 +12,6 @@ Config.Banner = [[
 | |_| |  __/\ V /  __/ | (_) | |_) | | | | | |  __/ | | | |_\__ \
 |____/ \___| \_/ \___|_|\___/| .__/|_| |_| |_|\___|_| |_|\__|___/
                              |_|                                 
-
 ]]
 
 Config.CoreObj = "auto" -- qbcore, qbx_core, ESX, Kora (client side only) or auto
@@ -36,4 +35,4 @@ Config.Target = "auto" -- ox_target, qb-target or auto
 
 Config.VehicleKeys = "auto" -- qb-vehiclekeys, qbx_vehiclekeys, Renewed-VehicleKeys, wasabi_carlock, jaksam_vehiclekeys or auto
 
-Config.Debug = false -- set to true to enable F-bridge debug output on client/server
+Config.Debug = true -- set to true to enable F-bridge debug output on client/server
