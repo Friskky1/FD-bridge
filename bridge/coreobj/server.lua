@@ -210,7 +210,7 @@ function friskkydev_lib.GetJobCount(source, job, amount)
 end
 
 ---@param source integer
----@return string
+---@return table
 function friskkydev_lib.hasJob(source)
 	if Config.Debug then print(source) end
     if GetResourceState('qb-core') == 'started' then
@@ -221,8 +221,7 @@ function friskkydev_lib.hasJob(source)
         return Player.job
     elseif GetResourceState('es_extended') == 'started' then
         local xPlayer = friskkydev_lib.GetPlayer(source)
-        local jobs = xPlayer.getJob()
-        return jobs.label
+        return xPlayer.getJob()
     end
 end
 

@@ -71,10 +71,10 @@ function friskkydev_lib.IsJobBoss()
     return job.isboss
 end
 
----@return string
+---@return table
 function friskkydev_lib.GetPlayerGang()
     local Player = friskkydev_lib.GetPlayerData()
-    return Player.gang.name
+    return Player.gang
 end
 
 ---@return boolean
@@ -100,7 +100,7 @@ end
 
 ---@return string
 function friskkydev_lib.GetIdentifierCID()
-    return friskkydev_lib.GetPlayerData().cid
+    return friskkydev_lib.GetPlayerData().citizenid
 end
 
 ---@return boolean

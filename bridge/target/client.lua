@@ -22,22 +22,12 @@ if Config.Debug then print("CLIENT PRINT TARGET "..tostring(Target).."^2 If its 
 
 function friskkydev_lib.disableTargeting(state)
     if Config.Debug then print("IF TRUE THEN YOU CANT TARGET " ..json.encode(state)) end
-    if GetResourceState('ox_target') == 'started' then 
-        if state then
-            Target:disableTargeting(true)
-            state = true
-        else
-            Target:disableTargeting(false)
-            state = false
-        end
+    state = state and true or false
+    -- returns true when targeting is disabled, on every target resource
+    if GetResourceState('ox_target') == 'started' then
+        Target:disableTargeting(state)
     else
-        if state then
-            Target:AllowTargeting(false)
-            state = false
-        else
-            Target:AllowTargeting(true)
-            state = true
-        end
+        Target:AllowTargeting(not state)
     end
     return state
 end
