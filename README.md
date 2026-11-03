@@ -4,7 +4,7 @@
 
 ## Make sure you import all the functions using
 
-- `local friskkydev_lib = exports['F-bridge']:import()` at the top of your client and server scripts
+- `local friskkydev_lib = exports['FD-bridge']:import()` at the top of your client and server scripts
 
 ## CoreObj Client
 
