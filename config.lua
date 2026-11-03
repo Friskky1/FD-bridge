@@ -35,4 +35,4 @@ Config.Target = "auto" -- ox_target, qb-target or auto
 
 Config.VehicleKeys = "auto" -- qb-vehiclekeys, qbx_vehiclekeys, Renewed-VehicleKeys, wasabi_carlock, jaksam_vehiclekeys or auto
 
-Config.Debug = true -- set to true to enable F-bridge debug output on client/server
+Config.Debug = false -- set to true to enable F-bridge debug output on client/server
