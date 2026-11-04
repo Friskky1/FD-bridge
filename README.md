@@ -21,6 +21,8 @@
 - `friskkydev_lib.GetIdentifierCID()`
 - `friskkydev_lib.isDead()`
 - `friskkydev_lib.getCoords()`
+- `friskkydev_lib.requestModel(model, timeout)` (returns the model hash, or nil if invalid / timed out)
+- `friskkydev_lib.requestAnimDict(dict, timeout)` (returns the dict, or nil if invalid / timed out)
 
 ## CoreObj Server
 

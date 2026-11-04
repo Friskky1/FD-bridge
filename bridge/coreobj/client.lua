@@ -38,6 +38,8 @@ function friskkydev_lib.Notify(msg, type, duration)
         exports['esx_notify']:Notify(type or "info", duration or 5000, msg)
     elseif GetResourceState('qb-core') == 'started' then 
         Core.Functions.Notify(msg, type, duration)
+    elseif GetResourceState('kora_core') == 'started' then
+        Core.notify.send({message = msg, duration = duration, type = type })
     end
 end
 
@@ -115,6 +117,41 @@ end
 ---@return vector3
 function friskkydev_lib.getCoords()
     return GetEntityCoords(PlayerPedId())
+end
+
+---@param model string|integer model name or hash
+---@param timeout? integer ms to wait before giving up (default 10000)
+---@return integer|nil modelHash, nil if the model is invalid or timed out
+function friskkydev_lib.requestModel(model, timeout)
+    local modelHash = type(model) == 'number' and model or joaat(model)
+    if not IsModelInCdimage(modelHash) then
+        print(('^1[FD-bridge] invalid model: %s^0'):format(model))
+        return nil
+    end
+    RequestModel(modelHash)
+    local giveUpAt = GetGameTimer() + (timeout or 10000)
+    while not HasModelLoaded(modelHash) do
+        if GetGameTimer() > giveUpAt then return nil end
+        Wait(10)
+    end
+    return modelHash
+end
+
+---@param dict string animation dictionary
+---@param timeout? integer ms to wait before giving up (default 10000)
+---@return string|nil dict, nil if the dictionary is invalid or timed out
+function friskkydev_lib.requestAnimDict(dict, timeout)
+    if not DoesAnimDictExist(dict) then
+        print(('^1[FD-bridge] invalid anim dict: %s^0'):format(dict))
+        return nil
+    end
+    RequestAnimDict(dict)
+    local giveUpAt = GetGameTimer() + (timeout or 10000)
+    while not HasAnimDictLoaded(dict) do
+        if GetGameTimer() > giveUpAt then return nil end
+        Wait(10)
+    end
+    return dict
 end
 
 

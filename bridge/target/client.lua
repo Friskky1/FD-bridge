@@ -51,7 +51,8 @@ end
 ---@param debug? boolean
 function friskkydev_lib.addBoxZone(name, coords, label, icon, distance, job, onSelect, itemreq, targetType, size, length, width, minZ, maxZ, heading, debug)
     if Config.Debug then print(name, coords, label, icon, distance, job, onSelect, itemreq, targetType, size, length, width, minZ, maxZ, heading, debug) end
-    local action = type(onSelect) == 'function' and onSelect or nil
+    -- functions passed through exports arrive as callable tables, not 'function'
+    local action = (type(onSelect) == 'function' or type(onSelect) == 'table') and onSelect or nil
     local event = type(onSelect) == 'string' and onSelect or nil
     if GetResourceState('ox_target') == 'started' then 
         Target:addBoxZone({
@@ -108,7 +109,8 @@ end
 ---@param targetType? string
 function friskkydev_lib.addLocalEntity(models, name, label, icon, distance, job, onSelect, itemreq, targetType)
     if Config.Debug then print(models, name, label, icon, distance, job, onSelect, itemreq, targetType) end
-    local action = type(onSelect) == 'function' and onSelect or nil
+    -- functions passed through exports arrive as callable tables, not 'function'
+    local action = (type(onSelect) == 'function' or type(onSelect) == 'table') and onSelect or nil
     local event = type(onSelect) == 'string' and onSelect or nil
     if GetResourceState('ox_target') == 'started' then 
         Target:addLocalEntity(models, {
