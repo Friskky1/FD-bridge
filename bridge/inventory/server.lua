@@ -93,6 +93,43 @@ function friskkydev_lib.HasItem(src, item, amount)
     end
 end
 
+-- Turns any inventory item table (qb slot map, ox list, ESX list or ESX { name = count }) into
+-- a list of { name, label, amount, slot, metadata } sorted by slot.
+function friskkydev_lib.NormalizeItems(items)
+    local list = {}
+    for key, item in pairs(items or {}) do
+        if type(item) == 'table' and item.name then
+            local amount = tonumber(item.amount or item.count) or 0
+            if amount > 0 then
+                list[#list + 1] = { name = item.name, label = item.label, amount = amount, slot = tonumber(item.slot), metadata = item.info or item.metadata }
+            end
+        elseif type(item) == 'number' and item > 0 then
+            list[#list + 1] = { name = key, amount = item }
+        end
+    end
+    table.sort(list, function(first, second)
+        if (first.slot or math.huge) ~= (second.slot or math.huge) then return (first.slot or math.huge) < (second.slot or math.huge) end
+        return first.name < second.name
+    end)
+    return list
+end
+
+---@param src integer
+---@return table|nil items list of { name, label, amount, slot, metadata }, nil if the player is not loaded
+function friskkydev_lib.GetInventoryItems(src)
+    if Config.Debug then print("friskkydev_lib.GetInventoryItems() "..src) end
+    if GetResourceState('ox_inventory') == 'started' then
+        local items = Inventory:GetInventoryItems(src)
+        return items and friskkydev_lib.NormalizeItems(items)
+    elseif GetResourceState('es_extended') == 'started' then
+        local xPlayer = Inventory.GetPlayerFromId(src)
+        return xPlayer and friskkydev_lib.NormalizeItems(xPlayer.getInventory())
+    else
+        local playerData = friskkydev_lib.GetPlayerData(src) -- qb-inventory / ps-inventory keep items in PlayerData
+        return playerData and friskkydev_lib.NormalizeItems(playerData.items)
+    end
+end
+
 ---@param id string
 ---@param label string
 ---@param slots number
@@ -238,6 +275,36 @@ function friskkydev_lib.ItemBox(src, item, action, amount)
     TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, action or 'add', amount)
     return true
 end
+
+-- Normalised item event: items created in or removed from an inventory by a script (not moves between inventories).
+-- Listen with: AddEventHandler('FD-bridge:server:itemChanged', function(inventoryId, itemName, amount, action, origin, reason) end)
+-- inventoryId is a player server id (number) or a stash/inventory name. action is 'add' or 'remove'.
+local function emitItemChanged(inventoryId, itemName, amount, action, origin, reason)
+    if not itemName then return end
+    TriggerEvent('FD-bridge:server:itemChanged', inventoryId, itemName, tonumber(amount) or 0, action, origin, reason)
+end
+
+if GetResourceState('ox_inventory') == 'started' then
+    -- shortcut: ox_inventory has no removal hook, so on ox only items entering the economy are reported.
+    exports.ox_inventory:registerHook('createItem', function(payload)
+        emitItemChanged(payload.inventoryId, payload.item and payload.item.name, payload.count, 'add', 'ox_inventory')
+    end, {})
+elseif GetResourceState('qb-inventory') == 'started' then
+    exports['qb-inventory']:AddListener('ItemAdded', function(data)
+        emitItemChanged(data.toId, data.item and data.item.name, data.amount, 'add', data.resource, data.reason)
+    end)
+    exports['qb-inventory']:AddListener('ItemRemoved', function(data)
+        emitItemChanged(data.fromId, data.item and data.item.name, data.amount, 'remove', data.resource, data.reason)
+    end)
+end
+
+-- ESX default inventory
+AddEventHandler('esx:onAddInventoryItem', function(playerId, itemName, count)
+    emitItemChanged(playerId, itemName, count, 'add', 'es_extended')
+end)
+AddEventHandler('esx:onRemoveInventoryItem', function(playerId, itemName, count)
+    emitItemChanged(playerId, itemName, count, 'remove', 'es_extended')
+end)
 
 exports("import", function()
     return friskkydev_lib

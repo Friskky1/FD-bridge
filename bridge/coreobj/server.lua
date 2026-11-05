@@ -283,6 +283,24 @@ function friskkydev_lib.vehicleOwner(licensePlate)
     return vehicle[1].citizenid
 end
 
+-- Normalised money event for every framework, so scripts can watch the economy without framework code.
+-- Listen with: AddEventHandler('FD-bridge:server:moneyChanged', function(source, moneyType, amount, action, reason) end)
+-- action is 'add', 'remove' or 'set' (for 'set', amount is the new balance).
+local function emitMoneyChanged(playerId, moneyType, amount, action, reason)
+    TriggerEvent('FD-bridge:server:moneyChanged', playerId, moneyType, tonumber(amount) or 0, action, reason)
+end
+
+AddEventHandler('QBCore:Server:OnMoneyChange', emitMoneyChanged) -- qb-core and qbx_core
+AddEventHandler('esx:addAccountMoney', function(playerId, accountName, amount, reason)
+    emitMoneyChanged(playerId, accountName, amount, 'add', reason)
+end)
+AddEventHandler('esx:removeAccountMoney', function(playerId, accountName, amount, reason)
+    emitMoneyChanged(playerId, accountName, amount, 'remove', reason)
+end)
+AddEventHandler('esx:setAccountMoney', function(playerId, accountName, amount, reason)
+    emitMoneyChanged(playerId, accountName, amount, 'set', reason)
+end)
+
 
 
 exports("import", function()

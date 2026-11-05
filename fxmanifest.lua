@@ -4,7 +4,7 @@ lua54 'yes'
 
 name "f-bridge"
 author "Friskky"
-version "1.0.3"
+version "1.1.0"
 description  "A library of functions and a bridge for Friskky Developments scripts"
 
 shared_script {
