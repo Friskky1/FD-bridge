@@ -58,7 +58,7 @@ function friskkydev_lib.AddItem(src, item, amount, metadata, slot, cb)
         return Inventory:AddItem(src, item, amount, metadata, slot, cb)
     else
         -- qb/ps-inventory take slot before info: AddItem(identifier, item, amount, slot, info, reason)
-        return Inventory:AddItem(src, item, amount, slot, metadata, GetInvokingResource() or 'CCD-Library')
+        return Inventory:AddItem(src, item, amount, slot, metadata, GetInvokingResource() or 'FD-bridge')
     end
 end
 
