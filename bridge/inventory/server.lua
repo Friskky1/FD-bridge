@@ -130,6 +130,18 @@ function friskkydev_lib.GetInventoryItems(src)
     end
 end
 
+-- qb-inventory has no GetInventoryItems export, but scripts such as qb-vehiclekeys call
+-- exports['qb-inventory']:GetInventoryItems(src). FiveM lets another resource answer an export
+-- call through this event, so the bridge supplies it with the player's qb item table.
+if GetResourceState('qb-inventory') ~= 'missing' then
+    AddEventHandler('__cfx_export_qb-inventory_GetInventoryItems', function(setCallback)
+        setCallback(function(src)
+            local playerData = friskkydev_lib.GetPlayerData(src)
+            return playerData and playerData.items or {}
+        end)
+    end)
+end
+
 ---@param id string
 ---@param label string
 ---@param slots number
