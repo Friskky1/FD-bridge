@@ -301,6 +301,20 @@ AddEventHandler('esx:setAccountMoney', function(playerId, accountName, amount, r
     emitMoneyChanged(playerId, accountName, amount, 'set', reason)
 end)
 
+-- Registers a usable item through the framework. ox_inventory runs framework usable items too.
+-- The item is never removed here; the calling script decides that.
+---@param itemName string
+---@param onUse fun(source: integer, item: table|nil)
+function friskkydev_lib.CreateUsableItem(itemName, onUse)
+    if GetResourceState('qb-core') == 'started' then
+        Core.Functions.CreateUseableItem(itemName, function(source, item) onUse(source, item) end)
+    elseif GetResourceState('qbx_core') == 'started' then
+        exports.qbx_core:CreateUseableItem(itemName, function(source, item) onUse(source, item) end)
+    elseif GetResourceState('es_extended') == 'started' then
+        ESX.RegisterUsableItem(itemName, function(source, _, item) onUse(source, item) end)
+    end
+end
+
 
 
 exports("import", function()
